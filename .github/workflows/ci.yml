@@ -1,0 +1,37 @@
+name: Qualite de code et tests CI
+
+on:
+  push:
+    branches: [ develop, 'feature/**' ]
+  pull_request:
+    branches: [ develop, main ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du dépôt de code
+        uses: actions/checkout@v4
+
+      - name: Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # On installe les outils de test et les dépendances du projet
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Vérification du formatage du code (le build plante si le code est mal aligné)
+      - name: Vérification du formatage (black)
+        run: black --check src/ tests/
+
+      # Vérification des erreurs de syntaxe ou d'importation
+      - name: Linting du code (flake8)
+        run: flake8 src/ tests/ --max-line-length=100
+
+      # Exécution automatique des tests unitaires écrits par la Personne 6
+      - name: Exécuter les tests unitaires (pytest)
+        run: pytest tests/unit/ -v --tb=short
