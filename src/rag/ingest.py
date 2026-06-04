@@ -73,3 +73,8 @@ def ingest_folder(folder:str, collection_name:str) -> None:
                 source_tag, 
                 collection_name
             )
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    ingest_folder("data/knowledge/cybersec", "cybersec_fr")
+    ingest_folder("data/knowledge/uphf",    "uphf_docs")
