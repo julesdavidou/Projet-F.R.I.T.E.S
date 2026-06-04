@@ -1,3 +1,6 @@
 from faster_whisper import WhisperModel
 
-model = WhisperModel("small")
+language="fr"
+model = WhisperModel("small") 
+
+#segments, info = model.transcribe(audio_path)

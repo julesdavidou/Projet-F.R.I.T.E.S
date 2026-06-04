@@ -9,7 +9,7 @@ async def start():
     cl.user_session.set("thread_id", thread_id) #donne un id à la session
 
     await cl.Message(
-    content="Bienvenue sur L'Agent de sécurité de l'UPHF.\n Sentez-vous libre de lui demander ce que vous désirez savoir sur la cybersécurité"
+        content="Bienvenue sur L'Agent de sécurité de l'UPHF.\n Sentez-vous libre de lui demander ce que vous désirez savoir sur la cybersécurité"
     ).send() #message 
 
 @cl.on_message
