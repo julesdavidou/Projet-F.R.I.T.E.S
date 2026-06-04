@@ -1,0 +1,17 @@
+name: Docker Build CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop, main ]
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du dépôt de code
+        uses: actions/checkout@v4 # copie le dépôt GitHub à l'intérieur de la machine virtuelle pour qu'elle puisse y accéder
+
+      - name: Vérification et Build de l'environnement Docker Compose
+        run: docker compose build
