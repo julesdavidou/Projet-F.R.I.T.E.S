@@ -3,7 +3,9 @@ import numpy as np
 import wave
 import uuid
 from pathlib import Path
-#from src.agent.graph import graph
+from src.agent.graph import graph
+from src.voice.stt import transcribe
+from src.voice.tts import synthesize
 
 @cl.on_chat_start
 async def start():
@@ -12,9 +14,10 @@ async def start():
     cl.user_session.set("thread_id", thread_id) #donne un id à la session
 
     await cl.Message(
-        content="Bienvenue sur L'Agent de sécurité de l'UPHF.\n Sentez-vous libre de lui demander ce que vous désirez savoir sur la cybersécurité"
+        content="Bienvenue sur FRITES (Filtrage des Risques Informatiques et Transmission d'Eveil à la Sécurité).\n " \
+        "Sentez-vous libre de lui demander ce que vous désirez savoir sur la cybersécurité"
     ).send() #message 
-"""
+
 @cl.on_message
 async def on_message(message: cl.Message):
     thread_id = cl.user_session.get("thread_id") #reprend l'id de session
@@ -29,15 +32,14 @@ async def on_message(message: cl.Message):
         }
     })
 
-    response = result["messages"][-1].content
+    response = result["messages"][-1].content #reponse de l'IA
 
-    await cl.Message(content=response).send() #reponse de l'ia
-"""
+    await cl.Message(content=response).send() #envoie du message
+    return response #pour la lecture vocale
+
 @cl.on_chat_start
 async def start():
     cl.user_session.set("audio_buffer", [])
-
-
 
 @cl.on_audio_chunk
 async def on_audio_chunk(chunk):
@@ -80,3 +82,15 @@ async def on_audio_end():
     text = transcribe(str(wav_path))
 
     print("TRANSCRIPTION :", text)
+
+    response = on_message(text)
+
+    sortie_path = synthesize(response)
+
+    await cl.Message(content=response).send()
+
+    await cl.Audio(
+        name="response",
+        path=sortie_path,
+        auto_play=True
+    ).send()
