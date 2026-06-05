@@ -7,7 +7,6 @@ from src.agent.graph import graph
 from src.voice.stt import transcribe
 from src.voice.tts import synthesize
 
-
 @cl.on_chat_start
 async def start():
 
