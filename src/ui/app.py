@@ -189,13 +189,8 @@ async def on_chat_start():
     cl.user_session.set("thread_id", thread_id)
     cl.user_session.set("audio_buffer", [])
 
-    await cl.Message(
-        content=(
-            "Bienvenue sur F.R.I.T.E.S. — Agent de sécurité numérique UPHF.\n\n"
-            "Pose-moi une question sur la cybersécurité, le phishing, les mots de passe, "
-            "la MFA, eduVPN ou les bonnes pratiques numériques."
-        )
-    ).send()
+    # Pas de message de bienvenue ici :
+    # l'écran d'accueil F.R.I.T.E.S. est rendu par public/frite-shell.js.
 
 
 @cl.on_message

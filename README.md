@@ -44,3 +44,13 @@ flowchart TD
     R --> S[Sources + PDF Chainlit]
     S --> U
 ```
+
+
+## Lancer le modèle en local
+````bash
+python -m uvicorn src.ui.web_app:app --reload --host 127.0.0.1 --port 8000
+````
+## Lancer le modèle sur réseau privé 
+````bash
+python -m uvicorn src.ui.web_app:app --reload --host 0.0.0.0 --port 8000
+````

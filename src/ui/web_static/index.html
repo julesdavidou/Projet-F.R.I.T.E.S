@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>F.R.I.T.E.S. — Agent de sécurité numérique UPHF</title>
+  <meta name="description" content="Assistant cybersécurité UPHF : phishing, mots de passe, MFA, eduVPN et bonnes pratiques numériques." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Slab:wght@700;800;900&display=swap" rel="stylesheet">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("frites-theme-mode");
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = saved === "light" || saved === "dark" ? saved : (prefersDark ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      } catch (_) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+  <div id="app" class="frite-app">
+    <aside id="sidebar" class="sidebar" aria-label="Conversations">
+      <div class="brand-row">
+        <img class="brand-logo" src="/assets/frite-logo.png" alt="Logo F.R.I.T.E.S." />
+        <div class="brand-copy">
+          <div class="brand-title">F.R.I.T.E.S</div>
+          <div class="brand-subtitle">La cyber à toutes les sauces</div>
+        </div>
+      </div>
+
+      <button id="newConversationBtn" class="new-chat-btn" type="button">
+        <span class="btn-icon" aria-hidden="true">✎</span>
+        <span>Nouvelle conversation</span>
+        <span class="btn-arrow" aria-hidden="true">›</span>
+      </button>
+
+      <label class="search-box" for="conversationSearch">
+        <span aria-hidden="true">⌕</span>
+        <input id="conversationSearch" type="search" placeholder="Rechercher dans les discussions..." autocomplete="off" />
+      </label>
+
+      <div class="sidebar-section-title">Récents</div>
+      <nav id="conversationList" class="conversation-list" aria-label="Discussions récentes"></nav>
+    </aside>
+
+    <div id="mobileBackdrop" class="mobile-backdrop" hidden></div>
+
+    <main class="chat-shell">
+      <header class="chat-header">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Ouvrir le menu">☰</button>
+        <div class="title-stack">
+          <h1 id="chatTitle">Nouvelle conversation cyber</h1>
+          <p id="chatSubtitle">Dialogue guidé • éveil cybersécurité</p>
+        </div>
+        <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Changer de thème" title="Changer de thème">
+          <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+        </button>
+      </header>
+
+      <section id="messages" class="messages" aria-live="polite"></section>
+
+      <footer class="composer-wrap">
+        <form id="composer" class="composer" autocomplete="off">
+          <button id="voiceBtn" class="voice-btn" type="button" aria-label="Démarrer la dictée vocale" title="Démarrer la dictée vocale">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" />
+              <path d="M19 11a7 7 0 0 1-14 0" />
+              <path d="M12 18v3" />
+              <path d="M8 21h8" />
+            </svg>
+          </button>
+          <textarea id="messageInput" rows="1" placeholder="Pose ta question..." maxlength="8000"></textarea>
+          <button id="sendBtn" class="send-btn" type="submit" aria-label="Envoyer">↑</button>
+        </form>
+        <p class="disclaimer">Les LLMs peuvent se tromper. Vérifiez les réponses.</p>
+      </footer>
+    </main>
+  </div>
+
+  <template id="emptyStateTemplate">
+    <div class="empty-state">
+      <img class="hero-logo" src="/assets/frite-logo.png" alt="F.R.I.T.E.S." />
+      <h2>Sur quel réflexe cyber devons-nous nous concentrer&nbsp;?</h2>
+      <p>Démarre une nouvelle conversation avec F.R.I.T.E.S. pour apprendre la cyber à toutes les sauces.</p>
+      <div class="starter-grid">
+        <button type="button" data-starter="phishing">Repérer un phishing</button>
+        <button type="button" data-starter="password">Créer un mot de passe solide</button>
+        <button type="button" data-starter="wifi">Utiliser un Wi‑Fi public</button>
+        <button type="button" data-starter="mfa">Comprendre la MFA</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>
