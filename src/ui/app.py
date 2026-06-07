@@ -7,23 +7,10 @@ from src.agent.graph import graph
 from src.voice.stt import transcribe
 from src.voice.tts import synthesize
 
-@cl.on_chat_start
-async def start():
-
-    thread_id = str(uuid.uuid4())
-    cl.user_session.set("thread_id", thread_id) #donne un id à la session
-
-    await cl.Message(
-        content="Bienvenue sur FRITES (Filtrage des Risques Informatiques et Transmission d'Eveil à la Sécurité).\n " \
-        "Sentez-vous libre de lui demander ce que vous désirez savoir sur la cybersécurité"
-    ).send() #message 
-
-@cl.on_message
-async def on_message(message: cl.Message):
-    thread_id = cl.user_session.get("thread_id") #reprend l'id de session
-
-    user_input = message.content #message de l'utilisateur
-
+async def process_message(user_input: str) -> str:
+    """Process user input through the agent graph and return the response."""
+    thread_id = cl.user_session.get("thread_id")
+    
     result = await graph.ainvoke({
         "messages": [("user", user_input)]
     }, config={
@@ -31,15 +18,26 @@ async def on_message(message: cl.Message):
             "thread_id": thread_id
         }
     })
-
-    response = result["messages"][-1].content #reponse de l'IA
-
-    await cl.Message(content=response).send() #envoie du message
-    return response #pour la lecture vocale
+    
+    response = result["messages"][-1].content
+    return response
 
 @cl.on_chat_start
 async def start():
+    thread_id = str(uuid.uuid4())
+    cl.user_session.set("thread_id", thread_id)
     cl.user_session.set("audio_buffer", [])
+    
+    await cl.Message(
+        content="Bienvenue sur FRITES (Filtrage des Risques Informatiques et Transmission d'Eveil à la Sécurité).\n " \
+        "Sentez-vous libre de lui demander ce que vous désirez savoir sur la cybersécurité"
+    ).send()
+
+@cl.on_message
+async def on_message(message: cl.Message):
+    response = await process_message(message.content)
+    await cl.Message(content=response).send()
+    return response
 
 @cl.on_audio_chunk
 async def on_audio_chunk(chunk):
@@ -72,23 +70,18 @@ def save_pcm_to_wav(pcm_bytes: list[bytes], sample_rate=24000):
 
 @cl.on_audio_end
 async def on_audio_end():
-
     buffer = cl.user_session.get("audio_buffer")
-
+    
     wav_path = save_pcm_to_wav(buffer)
-
     print("WAV généré :", wav_path)
-
+    
     text = transcribe(str(wav_path))
-
     print("TRANSCRIPTION :", text)
-
-    response = on_message(text)
-
+    
+    response = await process_message(text)
     sortie_path = synthesize(response)
-
+    
     await cl.Message(content=response).send()
-
     await cl.Audio(
         name="response",
         path=sortie_path,

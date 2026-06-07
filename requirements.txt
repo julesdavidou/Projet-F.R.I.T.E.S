@@ -1,0 +1,14 @@
+chainlit==1.1.306
+langchain>=0.1.0
+langchain-community>=0.1.0
+langchain-core>=0.1.0
+langgraph>=0.1.0
+langchain-openai>=0.0.1
+langchain-ollama>=0.0.1
+langchain-chroma>=0.1.0
+numpy>=1.26.0
+PyAudio>=0.2.13
+pydantic<2.9
+requests>=2.30.0
+python-dotenv>=1.0.0
+faster-whisper>=1.0.0
