@@ -1,3 +1,10 @@
 .venv
 .env
 .idea/
+tmp/
+.files/
+__pycache__/
+*.pyc
+
+models/piper/*.onnx
+models/piper/*.onnx.json

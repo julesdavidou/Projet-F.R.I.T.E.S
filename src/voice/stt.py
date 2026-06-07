@@ -1,15 +1,18 @@
+from functools import lru_cache
+
 from faster_whisper import WhisperModel
 
-# modèle chargé une seule fois (important)
-model = WhisperModel("small", device="cpu", compute_type="int8")
+
+@lru_cache(maxsize=1)
+def get_model() -> WhisperModel:
+    return WhisperModel("small", device="cpu", compute_type="int8")
+
 
 def transcribe(audio_path: str) -> str:
-    segments, info = model.transcribe(
+    segments, _ = get_model().transcribe(
         audio_path,
         language="fr",
-        vad_filter=True
+        vad_filter=True,
     )
 
-    text = " ".join(segment.text for segment in segments).strip()
-
-    return text
+    return " ".join(segment.text for segment in segments).strip()

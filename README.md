@@ -26,3 +26,21 @@ Dans **TOUS LES CAS**, ne faites **PAS** de merge sur la `main`. Je m'en occuper
 
 ### Si j'ai un doute ?
 N'hésitez pas à jeter un coup d'oeil à cette magnifique [cheatsheet](https://danielkummer.github.io/git-flow-cheatsheet/index.fr_FR.html).
+
+
+
+## Architecture actuelle
+
+```mermaid
+flowchart TD
+    U[Utilisateur Chainlit] --> UI[src/ui/app.py]
+    UI --> R[src/agent/runner.py]
+    R --> G[LangGraph ReAct]
+    G --> C[search_cybersec]
+    G --> H[search_uphf]
+    C --> CC[Chroma cybersec_fr]
+    H --> CU[Chroma uphf_docs]
+    G --> L[Ollama]
+    R --> S[Sources + PDF Chainlit]
+    S --> U
+```

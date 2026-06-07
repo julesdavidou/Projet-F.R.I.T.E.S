@@ -13,23 +13,56 @@ Règles obligatoires :
 - Ne donne jamais de procédure offensive : phishing, malware, contournement, vol d'identifiants, exploitation.
 - En cas de demande dangereuse, refuse et redirige vers la prévention, la détection ou la réaction défensive.
 - Réponds toujours en français.
+- Si un outil retourne AUCUN_RESULTAT_RAG, tu dois dire clairement que la base documentaire ne contient pas d'information fiable sur ce point. Tu ne dois pas citer des sources hors sujet.
+- Ne donne pas de procédure détaillée si elle n'est pas présente dans les documents récupérés.
 """
 
 
 DANGEROUS_KEYWORDS = [
-    "voler un mot de passe",
-    "bypass",
-    "contourner l'authentification",
-    "créer un malware",
-    "keylogger",
+    "créer un phishing",
+    "creer un phishing",
+    "faire un phishing",
     "phishing indétectable",
+    "phishing indetectable",
+    "hameçonnage indétectable",
+    "hameconnage indetectable",
+    "malware",
+    "logiciel malveillant",
+    "voler des mots de passe",
+    "stealer",
+    "keylogger",
+    "ransomware",
+    "exploitation non autorisée",
+    "exploitation non autorisee",
+]
+
+DEFENSIVE_KEYWORDS = [
+    "reconnaître",
+    "reconnaitre",
+    "détecter",
+    "detecter",
+    "identifier",
+    "signaler",
+    "se protéger",
+    "se proteger",
+    "prévenir",
+    "prevenir",
+    "que faire",
+    "comment réagir",
+    "comment reagir",
+    "bonnes pratiques",
 ]
 
 
 def is_potentially_dangerous(text: str) -> bool:
     lowered = text.lower()
-    return any(keyword in lowered for keyword in DANGEROUS_KEYWORDS)
 
+    is_defensive = any(keyword in lowered for keyword in DEFENSIVE_KEYWORDS)
+
+    if is_defensive:
+        return False
+
+    return any(keyword in lowered for keyword in DANGEROUS_KEYWORDS)
 
 def safe_fallback() -> str:
     return (
