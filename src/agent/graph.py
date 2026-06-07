@@ -16,6 +16,7 @@ llm = ChatOllama(
     model=OLLAMA_MODEL,
     base_url=OLLAMA_BASE_URL,
     temperature=0.2,
+    # reasoning=False, ##si trop long
 )
 
 tools = [search_cybersec, search_uphf]
