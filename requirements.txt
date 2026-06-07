@@ -1,0 +1,14 @@
+chainlit
+numpy
+
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+langgraph
+
+chromadb
+sentence-transformers
+pypdf
+
+faster-whisper
