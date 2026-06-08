@@ -9,6 +9,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
 .Python
 build/
 develop-eggs/
@@ -54,3 +55,7 @@ models/piper/*.onnx
 
 # OS
 Thumbs.db
+
+# Bases de données et dossiers de données
+chroma_data/
+*.sqlite3
