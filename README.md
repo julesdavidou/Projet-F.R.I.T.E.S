@@ -113,6 +113,9 @@ Les documents sources (PDFs de l'eduVPN, MFA, Charte informatique, etc.) doivent
 
 Ils sont ensuite vectorisés par Sentence-Transformers et stockés dans ChromaDB. Un filtre de distance ($L2 < 10.0$) empêche l'IA d'utiliser des documents hors-sujet.
 
+Les documents étant sotckés localement, il faut générer les collection dans ChromaDB lors de l'installation.
+Pour cela, il suffit d'exécuter l'un des scripts ingest_all.ps1 ou ingest_all.sh respectivement pour Windows et linux.
+
 ## 🧪 Tests Unitaires & CI
 Le projet dispose d'une suite de tests automatisée propulsée par pytest et GitHub Actions.
 
