@@ -1,6 +1,7 @@
 (() => {
   const STORAGE_KEY = "frites-standalone-state-v3";
   const THEME_KEY = "frites-theme-mode";
+  const MODEL_KEY = "frites-active-model";
 
   const SCENARIOS = [
     {
@@ -69,6 +70,7 @@
     send: $("#sendBtn"),
     voice: $("#voiceBtn"),
     themeToggle: $("#themeToggleBtn"),
+    modelSelect: $("#modelSelect"),
     emptyTemplate: $("#emptyStateTemplate")
   };
 
@@ -314,6 +316,82 @@
     backdrop.querySelector('[data-action="cancel"]')?.focus();
   }
 
+  async function loadModels() {
+    if (!els.modelSelect) return;
+
+    const savedModel = (() => {
+      try { return localStorage.getItem(MODEL_KEY); } catch (_) { return null; }
+    })();
+
+    els.modelSelect.disabled = true;
+    els.modelSelect.innerHTML = '<option value="">Chargement…</option>';
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 9000);
+
+    try {
+      const response = await fetch("/api/models", { signal: controller.signal });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || `Erreur HTTP ${response.status}`);
+
+      const models = Array.isArray(data.models) ? data.models.filter(Boolean) : [];
+      const activeModel = data.active_model || models[0] || "";
+      if (!models.length && activeModel) models.push(activeModel);
+
+      const preferred = savedModel && models.includes(savedModel) ? savedModel : activeModel;
+
+      els.modelSelect.innerHTML = models.length
+        ? models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("")
+        : '<option value="">Aucun modèle installé</option>';
+
+      if (preferred) els.modelSelect.value = preferred;
+      els.modelSelect.disabled = !models.length;
+
+      if (preferred && preferred !== activeModel) {
+        await setActiveModel(preferred, false);
+      }
+    } catch (error) {
+      const message = error?.name === "AbortError"
+        ? "Le chargement des modèles a expiré. Vérifie Ollama."
+        : `Impossible de charger les modèles Ollama : ${error.message || error}`;
+
+      els.modelSelect.innerHTML = '<option value="">Ollama indisponible</option>';
+      els.modelSelect.disabled = true;
+      console.error(message, error);
+      showToast(message, "warning");
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  async function setActiveModel(model, notify = true) {
+    const cleaned = String(model || "").trim();
+    if (!cleaned) return;
+
+    if (els.modelSelect) els.modelSelect.disabled = true;
+
+    try {
+      const response = await fetch("/api/model", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: cleaned })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || `Erreur HTTP ${response.status}`);
+
+      const active = data.active_model || cleaned;
+      try { localStorage.setItem(MODEL_KEY, active); } catch (_) {}
+      if (els.modelSelect) els.modelSelect.value = active;
+      if (notify) showToast(`Modèle actif : ${active}`, "success");
+    } catch (error) {
+      showToast(`Impossible de changer de modèle : ${error.message || error}`, "error");
+      await loadModels();
+    } finally {
+      if (els.modelSelect && els.modelSelect.options.length) els.modelSelect.disabled = false;
+    }
+  }
+
+
   function renderSidebar() {
     const filter = els.search.value.trim().toLowerCase();
     const conversations = state.conversations.filter((item) => displayTitle(item).toLowerCase().includes(filter));
@@ -373,7 +451,7 @@
 
     const card = document.createElement("div");
     card.className = "guidance-card";
-    card.innerHTML = `<img class="guidance-icon" src="/assets/frite-logo.png" alt="" aria-hidden="true"><strong>F.R.I.T.E.S est là pour vous saucer.</strong>`;
+    card.innerHTML = `<img class="guidance-icon" src="/assets/logo-badge.png" alt="" aria-hidden="true"><strong>F.R.I.T.E.S est là pour vous saucer.</strong>`;
     els.messages.appendChild(card);
 
     conversation.messages.forEach((message) => appendMessageNode(message));
@@ -929,8 +1007,10 @@
   els.backdrop.addEventListener("click", closeMobileMenu);
   els.voice.addEventListener("click", toggleDictation);
   els.themeToggle?.addEventListener("click", toggleTheme);
+  els.modelSelect?.addEventListener("change", (event) => setActiveModel(event.target.value));
 
   applyTheme();
+  loadModels();
   render();
   autosizeInput();
   startTitleTicker();

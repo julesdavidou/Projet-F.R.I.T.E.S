@@ -1,0 +1,58 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: frites_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    # Si tu as Docker + NVIDIA Container Toolkit sur une machine avec GPU NVIDIA,
+    # tu peux décommenter ce bloc.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    container_name: frites_app
+    restart: unless-stopped
+    depends_on:
+      ollama:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      # Important : ton code lit OLLAMA_BASE_URL, pas OLLAMA_URL.
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma4:e4b}
+      CHROMA_PATH: /app/chroma_data
+      HF_HOME: /root/.cache/huggingface
+      TRANSFORMERS_CACHE: /root/.cache/huggingface
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      # Garde la base RAG persistante et réutilise celle du projet si elle existe déjà.
+      - ./chroma_data:/app/chroma_data
+      # Garde les PDF accessibles pour les liens de sources dans l'UI.
+      - ./data:/app/data:ro
+      # Évite de retélécharger les modèles d'embedding à chaque rebuild.
+      - hf_cache:/root/.cache/huggingface
+      # Audio temporaire pour la transcription vocale.
+      - app_tmp:/app/tmp
+
+volumes:
+  ollama_data:
+  hf_cache:
+  app_tmp:

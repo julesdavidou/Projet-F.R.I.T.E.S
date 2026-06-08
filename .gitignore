@@ -8,3 +8,6 @@ __pycache__/
 
 models/piper/*.onnx
 models/piper/*.onnx.json
+.pytest_cache/
+chroma_data/
+.DS_Store

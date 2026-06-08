@@ -1,0 +1,24 @@
+.git
+.github
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+node_modules
+.DS_Store
+.env
+.env
+
+# Ces dossiers sont montés en volumes par docker-compose.yml.
+chroma_data
+data
+ollama_data
+tmp
+
+# Archives et fichiers de patch locaux.
+*.zip
+frite_*_patch
+frite_standalone_ui_*

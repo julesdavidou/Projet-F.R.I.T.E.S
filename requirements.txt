@@ -1,4 +1,6 @@
-chainlit
+fastapi
+uvicorn[standard]
+python-multipart
 numpy
 
 langchain
@@ -6,6 +8,7 @@ langchain-core
 langchain-community
 langchain-ollama
 langgraph
+langchain-text-splitters
 
 chromadb
 sentence-transformers

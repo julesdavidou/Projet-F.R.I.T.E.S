@@ -9,8 +9,12 @@ This replaces the Chainlit UI layer, but reuses the existing agent backend:
 
 from __future__ import annotations
 
+import json
+import os
 import re
 import sys
+import urllib.error
+import urllib.request
 import uuid
 from pathlib import Path
 from typing import Literal
@@ -25,7 +29,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.agent.graph import llm  # noqa: E402
+from src.agent.graph import get_active_model, get_llm, set_active_model  # noqa: E402
 from src.agent.runner import ask_agent  # noqa: E402
 from src.ui.helpers import normalize_transcription  # noqa: E402
 
@@ -39,7 +43,9 @@ SOURCE_LINE_PATTERN = re.compile(
     re.MULTILINE | re.IGNORECASE,
 )
 
-app = FastAPI(title="F.R.I.T.E.S. UI", version="1.4.0")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
+
+app = FastAPI(title="F.R.I.T.E.S. UI", version="1.5.0")
 app.mount("/assets", StaticFiles(directory=STATIC_DIR), name="assets")
 
 
@@ -78,6 +84,10 @@ class TitleResponse(BaseModel):
 
 class TranscriptionResponse(BaseModel):
     text: str
+
+
+class ModelSelection(BaseModel):
+    model: str = Field(min_length=1, max_length=160)
 
 
 def _clean_title(raw_title: str, fallback_source: str) -> str:
@@ -169,6 +179,23 @@ def _extract_sources(answer: str) -> list[SourceRef]:
     return results
 
 
+def _ollama_json(path: str) -> dict:
+    """Call Ollama's local HTTP API without adding a new dependency."""
+    url = f"{OLLAMA_BASE_URL}{path}"
+    try:
+        with urllib.request.urlopen(url, timeout=8) as response:  # noqa: S310 - local Ollama API
+            payload = response.read().decode("utf-8")
+            return json.loads(payload) if payload else {}
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Ollama indisponible sur {OLLAMA_BASE_URL}: {exc}") from exc
+
+
+def _list_ollama_models() -> list[str]:
+    data = _ollama_json("/api/tags")
+    models = [item.get("name") for item in data.get("models", []) if item.get("name")]
+    return sorted(set(models), key=str.lower)
+
+
 @app.get("/")
 async def index() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
@@ -176,7 +203,51 @@ async def index() -> FileResponse:
 
 @app.get("/health")
 async def health() -> dict[str, str]:
-    return {"status": "ok", "ui": "standalone", "agent": "src.agent.runner.ask_agent"}
+    return {"status": "ok", "ui": "standalone", "agent": "src.agent.runner.ask_agent", "model": get_active_model()}
+
+
+@app.get("/api/models")
+async def get_models() -> dict[str, object]:
+    """Return models installed in Ollama and the currently active one."""
+    active_model = get_active_model()
+    try:
+        models = await run_in_threadpool(_list_ollama_models)
+    except Exception:
+        models = []
+
+    if active_model and active_model not in models:
+        models.insert(0, active_model)
+
+    return {"models": models, "active_model": active_model}
+
+
+@app.post("/api/model")
+async def change_model(payload: ModelSelection) -> dict[str, object]:
+    """Switch the active Ollama model for future chat/title requests."""
+    model = payload.model.strip()
+    if not model:
+        raise HTTPException(status_code=400, detail="Modèle vide.")
+
+    try:
+        models = await run_in_threadpool(_list_ollama_models)
+    except Exception:
+        models = []
+
+    if models and model not in models:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Le modèle '{model}' n'est pas installé dans Ollama. "
+                "Installe-le avec : docker compose exec ollama ollama pull " + model
+            ),
+        )
+
+    try:
+        active = await run_in_threadpool(set_active_model, model)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Impossible d'activer le modèle : {exc}") from exc
+
+    return {"ok": True, "active_model": active, "models": models or [active]}
 
 
 @app.post("/api/chat", response_model=ChatResponse)
@@ -189,7 +260,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
     steps: list[UiStep] = [
         UiStep(title="Préparation de la requête", detail="Conversation récupérée et message préparé."),
-        UiStep(title="Agent RAG / Ollama", detail="Recherche documentaire et génération de la réponse."),
+        UiStep(title="Agent RAG / Ollama", detail=f"Recherche documentaire et génération avec {get_active_model()}."),
     ]
 
     answer = await ask_agent(user_input=message, thread_id=conversation_id)
@@ -230,7 +301,7 @@ async def title(request: TitleRequest) -> TitleResponse:
     )
 
     try:
-        result = await llm.ainvoke(prompt)
+        result = await get_llm().ainvoke(prompt)
         raw_title = getattr(result, "content", str(result))
         generated = _clean_title(raw_title, fallback)
     except Exception:
