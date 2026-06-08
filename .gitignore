@@ -54,3 +54,6 @@ models/piper/*.onnx
 
 # OS
 Thumbs.db
+
+#chromadb
+chroma_data/
