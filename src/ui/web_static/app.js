@@ -373,7 +373,7 @@
 
     const card = document.createElement("div");
     card.className = "guidance-card";
-    card.innerHTML = `<img class="guidance-icon" src="/assets/frite-logo.png" alt="" aria-hidden="true"><strong>F.R.I.T.E.S est là pour vous saucer.</strong>`;
+    card.innerHTML = `<img class="guidance-icon" src="/assets/Logo_F.R.I.T.E.S-rond_sans_ecriture.png" alt="" aria-hidden="true"><strong>F.R.I.T.E.S est là pour vous saucer.</strong>`;
     els.messages.appendChild(card);
 
     conversation.messages.forEach((message) => appendMessageNode(message));
