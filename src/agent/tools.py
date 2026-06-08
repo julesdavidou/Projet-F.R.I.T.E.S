@@ -2,15 +2,8 @@ from langchain_core.tools import tool
 
 from src.rag.retriever import retrieve
 
-
-def format_docs(docs: list[dict]) -> str:
-    if not docs:
-        return "AUCUN_RESULTAT_RAG: aucun document pertinent trouvé dans cette collection."
-
-    return "\n---\n".join(
-        f"[Source: {d.get('source', 'inconnue')}, page: {d.get('page', '?')}] {d.get('text', '')}"
-        for d in docs
-    )
+# Au-dessus de 10.0, le document est considéré comme hors sujet par rapport à la question.
+DISTANCE_MAX = 10.0
 
 
 @tool
@@ -24,7 +17,8 @@ def search_cybersec(query: str) -> str:
         n_results=8,
     )
 
-    docs = filter_by_distance(docs, max_distance=None)
+    # Remplacement de max_distance=None par notre limite
+    docs = filter_by_distance(docs, max_distance=DISTANCE_MAX)
     docs = filter_query_specific_relevance(query, docs)
     docs = docs[:4]
 
@@ -44,7 +38,8 @@ def search_uphf(query: str) -> str:
         n_results=8,
     )
 
-    docs = filter_by_distance(docs, max_distance=None)
+    # Remplacement de max_distance=None par notre limite
+    docs = filter_by_distance(docs, max_distance=DISTANCE_MAX) # max_distance=None avant, pas de filtrage dcp
     docs = filter_query_specific_relevance(query, docs)
     docs = docs[:4]
 
