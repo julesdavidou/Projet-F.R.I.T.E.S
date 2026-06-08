@@ -43,9 +43,11 @@ wheels/
 tmp/
 temp/
 *.log
+.files/
 
-# Audio files
+# Audio & Heavy IA Models
 tmp/audio/
+models/piper/*.onnx
 
 # Chainlit
 .chainlit/
