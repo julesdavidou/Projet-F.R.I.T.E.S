@@ -109,9 +109,13 @@ L'agent est capable d'écouter et de parler. L'inférence est calculée localeme
 
 ## 📚 Sources PDF (RAG)
 Pour que l'agent puisse répondre aux questions spécifiques à l'UPHF, il utilise le RAG (Retrieval-Augmented Generation).
-Les documents sources (PDFs de l'eduVPN, MFA, Charte informatique, etc.) doivent être placés dans le dossier d'ingestion prévu à cet effet (ex: data/).
+Les documents sources (PDFs de l'eduVPN, MFA, Charte informatique, etc.) doivent être placés dans le dossier d'ingestion prévu à cet effet (data/knowledge/cybersec et data/knowledge/uphf).
 
 Ils sont ensuite vectorisés par Sentence-Transformers et stockés dans ChromaDB. Un filtre de distance ($L2 < 10.0$) empêche l'IA d'utiliser des documents hors-sujet.
+
+Les documents étant sotckés localement, il faut générer les collection dans ChromaDB lors de l'installation.
+Pour cela, il suffit d'exécuter l'un des scripts ingest_all.ps1 ou ingest_all.sh respectivement pour Windows et linux.
+A noter que cette action est requise après chaque modification des documents sources, la base de donné sera ainsi supprimé puis recréer avec les documents dans data/knowledge/cybersec et data/knowledge/uphf.
 
 ## 🧪 Tests Unitaires & CI
 Le projet dispose d'une suite de tests automatisée propulsée par pytest et GitHub Actions.
