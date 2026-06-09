@@ -5,7 +5,7 @@ Bienvenue sur le dépôt GitHub du projet F.R.I.T.E.S. Un agent conversationnel 
 
 ---
 
-## 🏗️ Architecture du Projet
+## Architecture du Projet
 
 Voici l'architecture technique simplifiée de l'application :
 
@@ -25,7 +25,7 @@ graph TD
     end
     
     subgraph "IA & Données Locales"
-        Agent <-->|Requêtes LLM| Ollama[(Ollama\nModèle: Phi-4-mini)]
+        Agent <-->|Requêtes LLM| Ollama[(Ollama\nModèle: Phi-4-mini, llama3.2:3b, gemma4:e4b)]
         Agent <-->|Recherche RAG| Chroma[(ChromaDB\nBase Vectorielle)]
         Chroma <--> Docs[Documents PDF\nCyber & UPHF]
     end
@@ -47,45 +47,49 @@ flowchart TD
     S --> U
 ```
 
-## 📋 Prérequis
+## Prérequis
 
 * **Docker Desktop** (recommandé pour un déploiement sans conflit).
-* **Python 3.11** (si exécution en local sans Docker).
-* Les modèles vocaux Piper (voir section *Voix*).
+* **Git**
+* Au moins **8 Go** de RAM
 
 ---
 
-## ⚙️ Variables d'Environnement (`.env`)
-
-À la racine du projet, créez un fichier nommé `.env`. Ce fichier est ignoré par Git pour des raisons de sécurité. Il doit contenir a minima la configuration de connexion aux conteneurs :
-
-```env
-# Connexion à l'IA locale
-OLLAMA_URL=http://ollama:11434
-OLLAMA_MODEL=phi4-mini
-
-# Connexion à la base de données documentaire
-CHROMA_HOST=chromadb
-CHROMA_PORT=8000
-
-# Variables de test optionnelles
-RUN_OLLAMA_TESTS=0
-```
-
-## 🚀 Installation & Lancement
+## Installation & Lancement
 
 L'application est conteneurisée pour éviter les conflits de dépendances (notamment sur Windows).
 
 ### Méthode 1 : Avec Docker (Recommandée)
-1. Assurez-vous que Docker Desktop est lancé.
-2. Ouvrez un terminal à la racine du projet et exécutez le build :
+#### Si vous avez déjà fait l'installation du docker, lancez simplement :
+```bash
+docker compose up -d
+```
+
+#### Sinon :
+1. Clonez le dépôt GitHub avec :
+    ```bash
+    git clone https://github.com/julesdavidou/Agent-de-securite-UPHF
+    ```
+
+2. Déplacez-vous dans le répertoire cloné :
+    ```bash
+    cd Agent-de-securite-UPHF
+    ```  
+3. Assurez-vous que Docker Desktop est lancé.
+4. Dans le terminal à la racine du projet (Agent-de-securite-UPHF), exécutez le build :
    ```bash
-   docker compose up --build
+    docker compose build app
+    docker compose up -d ollama
+    docker compose exec ollama ollama pull gemma4:e4b
+    docker compose exec ollama ollama pull llama3.2:3b
+    docker compose exec ollama ollama pull phi4-mini
+    docker compose up -d app
+    docker compose exec app python -m src.rag.ingest
    ```
-3. Docker va télécharger les images (Ollama, ChromaDB) et compiler l'application.
-4. Ouvrez votre navigateur sur : http://localhost:8000
+5. Ouvrez votre navigateur sur : http://localhost:8000
 
 ### Méthode 2 : En Local (Environnement de développement)
+Partons du principe que vous avez déjà cloné le git comme dans la méthode 1.
 1. Créez un environnement virtuel et installez les dépendances :
     ```bash
     python3.11 -m venv .venv
@@ -97,7 +101,7 @@ L'application est conteneurisée pour éviter les conflits de dépendances (nota
     ```bash
     python -m uvicorn src.ui.web_app:app --reload --host 127.0.0.1 --port 8000
     ```
-## 🎙️ Voix (STT / TTS)
+## Voix (STT / TTS)
 L'agent est capable d'écouter et de parler. L'inférence est calculée localement sur le processeur (CPU).
 * STT (Reconnaissance vocale) : Assurée par faster-whisper. Note : L'importation du modèle utilise du Lazy Loading pour ne pas bloquer les  démarrages applicatifs pendant les tests.
 
@@ -107,17 +111,17 @@ L'agent est capable d'écouter et de parler. L'inférence est calculée localeme
     
     `models/piper/fr_FR-upmc-medium.onnx`
 
-## 📚 Sources PDF (RAG)
+## Sources PDF (RAG)
 Pour que l'agent puisse répondre aux questions spécifiques à l'UPHF, il utilise le RAG (Retrieval-Augmented Generation).
 Les documents sources (PDFs de l'eduVPN, MFA, Charte informatique, etc.) doivent être placés dans le dossier d'ingestion prévu à cet effet (data/knowledge/cybersec et data/knowledge/uphf).
 
 Ils sont ensuite vectorisés par Sentence-Transformers et stockés dans ChromaDB. Un filtre de distance ($L2 < 10.0$) empêche l'IA d'utiliser des documents hors-sujet.
 
-Les documents étant sotckés localement, il faut générer les collection dans ChromaDB lors de l'installation.
-Pour cela, il suffit d'exécuter l'un des scripts ingest_all.ps1 ou ingest_all.sh respectivement pour Windows et linux.
-A noter que cette action est requise après chaque modification des documents sources, la base de donné sera ainsi supprimé puis recréer avec les documents dans data/knowledge/cybersec et data/knowledge/uphf.
+Les documents étant stockés localement, il faut générer les collection dans ChromaDB lors de l'installation.
+Pour cela, il suffit d'exécuter l'un des `scripts ingest_all.ps1` ou `ingest_all.sh` respectivement pour Windows et linux.
+A noter que cette action est requise après chaque modification des documents sources, la base de donnée sera ainsi supprimée puis recréée avec les documents dans `data/knowledge/cybersec` et `data/knowledge/uphf`.
 
-## 🧪 Tests Unitaires & CI
+## Tests Unitaires & CI
 Le projet dispose d'une suite de tests automatisée propulsée par pytest et GitHub Actions.
 
 Pour lancer les tests légers localement (version rapide, sans charger les lourds modèles IA en mémoire) :
@@ -125,7 +129,7 @@ Pour lancer les tests légers localement (version rapide, sans charger les lourd
 pytest tests/unit -q -m "not integration and not ollama and not slow"
 ```
 
-Comportement de la CI :
+## Comportement de la CI :
 
 À chaque Pull Request vers develop ou main, GitHub Actions exécute automatiquement le workflow de qualité (black, flake8, pytest ciblé) et vérifie que la compilation Docker (docker-compose build) est fonctionnelle.
 
