@@ -2,9 +2,14 @@ name: Docker Build CI
 
 on:
   push:
-    branches: [develop]
+    branches:
+      - main
+      - develop
+      - "feature/**"
   pull_request:
-    branches: [develop, main]
+    branches:
+      - main
+      - develop
 
 jobs:
   docker-build:
