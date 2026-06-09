@@ -1097,3 +1097,141 @@ html[data-theme="dark"] #messageInput::placeholder { color: #766848; opacity: 1;
     font-size: 17px;
   }
 }
+
+
+/* v12 clean — sélecteur de modèle sous la saisie, logos sans fond */
+.brand-logo,
+.guidance-icon {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+}
+
+.hero-logo {
+  width: min(360px, 72vw) !important;
+  height: auto !important;
+  max-height: 270px !important;
+  object-fit: contain !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  margin: 18px auto 0 !important;
+}
+
+.composer-wrap {
+  padding: 16px 28px 10px;
+}
+
+.composer-meta {
+  width: min(890px, 100%);
+  margin: 8px auto 0;
+  padding: 0 4px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.composer-model-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .52);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
+
+.composer-model-picker span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+
+.composer-model-picker select {
+  min-width: 172px;
+  max-width: 260px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.composer-model-picker select:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+
+.composer-model-picker select:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 214, 77, .35);
+  border-radius: 10px;
+}
+
+.composer-model-picker select option {
+  color: #17130b;
+  background: #fffaf0;
+}
+
+html[data-theme="dark"] .composer-model-picker {
+  background: #1d180f;
+  border-color: rgba(255, 214, 77, .24);
+  color: #fff7d6;
+}
+
+html[data-theme="dark"] .composer-model-picker select {
+  color: #fff7d6;
+}
+
+html[data-theme="dark"] .composer-model-picker select option {
+  color: #17130b;
+  background: #fffaf0;
+}
+
+@media (max-width: 860px) {
+  .composer-wrap {
+    padding: 10px 10px max(8px, env(safe-area-inset-bottom));
+  }
+
+  .composer-meta {
+    width: 100%;
+    margin-top: 8px;
+    padding: 0 2px;
+    justify-content: flex-start;
+  }
+
+  .composer-model-picker {
+    max-width: 100%;
+    border-radius: 18px;
+  }
+
+  .composer-model-picker select {
+    min-width: 138px;
+    max-width: calc(100vw - 145px);
+    font-size: 12.5px;
+  }
+
+  .hero-logo {
+    width: min(300px, 82vw) !important;
+    max-height: 220px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .composer-model-picker {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .composer-model-picker select {
+    min-width: 0;
+    flex: 1;
+  }
+}

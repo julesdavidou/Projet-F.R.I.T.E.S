@@ -20,7 +20,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="/assets/app.css" />
+  <link rel="stylesheet" href="/assets/app.css?v=12" />
 </head>
 <body>
   <div id="app" class="frite-app">
@@ -77,6 +77,16 @@
           <textarea id="messageInput" rows="1" placeholder="Pose ta question..." maxlength="8000"></textarea>
           <button id="sendBtn" class="send-btn" type="submit" aria-label="Envoyer">↑</button>
         </form>
+
+        <div class="composer-meta">
+          <label class="composer-model-picker" for="modelSelect">
+            <span>Modèle</span>
+            <select id="modelSelect" aria-label="Choisir le modèle Ollama">
+              <option value="">Chargement…</option>
+            </select>
+          </label>
+        </div>
+
         <p class="disclaimer">Les LLMs peuvent se tromper. Vérifiez les réponses.</p>
       </footer>
     </main>
@@ -96,6 +106,6 @@
     </div>
   </template>
 
-  <script src="/assets/app.js" defer></script>
+  <script src="/assets/app.js?v=12" defer></script>
 </body>
 </html>

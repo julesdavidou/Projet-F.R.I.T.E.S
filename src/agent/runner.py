@@ -1,6 +1,6 @@
 import re
 
-from src.agent.graph import agent
+from src.agent import graph as agent_graph
 from src.agent.guardrails import is_potentially_dangerous, safe_fallback
 from src.agent.memory import make_config
 
@@ -70,7 +70,7 @@ async def ask_agent(user_input: str, thread_id: str) -> str:
         return safe_fallback()
 
     try:
-        result = await agent.ainvoke(
+        result = await agent_graph.get_agent().ainvoke(
             {"messages": [("user", user_input)]},
             config=make_config(thread_id),
         )
@@ -79,6 +79,7 @@ async def ask_agent(user_input: str, thread_id: str) -> str:
             "Je n'arrive pas à interroger correctement le modèle local Ollama. "
             "Vérifie qu'Ollama est lancé, que le modèle configuré est téléchargé, "
             "et qu'il n'est pas trop lourd pour la mémoire disponible.\n\n"
+            f"Modèle actif : {agent_graph.get_active_model()}\n"
             f"Détail technique : {exc}"
         )
 

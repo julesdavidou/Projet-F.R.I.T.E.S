@@ -59,3 +59,5 @@ Thumbs.db
 # Bases de données et dossiers de données
 chroma_data/
 *.sqlite3
+.pytest_cache/
+.DS_Store
