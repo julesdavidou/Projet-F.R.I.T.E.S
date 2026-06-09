@@ -33,6 +33,10 @@ def install_fake_graph(monkeypatch, fake_agent):
     fake_graph = types.ModuleType("src.agent.graph")
     fake_graph.agent = fake_agent
     fake_graph.graph = fake_agent
+ 
+    fake_graph.get_agent = lambda: fake_agent
+    fake_graph.get_active_model = lambda: "gemma4:e4b"
+    
     monkeypatch.setitem(sys.modules, "src.agent.graph", fake_graph)
 
 

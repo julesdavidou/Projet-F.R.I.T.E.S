@@ -93,9 +93,9 @@ L'application est conteneurisée pour éviter les conflits de dépendances (nota
     pip install -r requirements.txt
     ```
 2. Installez le modèle Ollama manuellement sur votre machine : `ollama pull phi4-mini`
-3. Lancez Chainlit :
+3. Lancez le modèle en local :
     ```bash
-    python -m chainlit run app.py -w
+    python -m uvicorn src.ui.web_app:app --reload --host 127.0.0.1 --port 8000
     ```
 ## 🎙️ Voix (STT / TTS)
 L'agent est capable d'écouter et de parler. L'inférence est calculée localement sur le processeur (CPU).
