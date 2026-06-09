@@ -33,6 +33,8 @@ def install_fake_graph(monkeypatch, fake_agent):
     fake_graph = types.ModuleType("src.agent.graph")
     fake_graph.agent = fake_agent
     fake_graph.graph = fake_agent
+    fake_graph.get_agent = lambda: fake_agent
+    fake_graph.get_active_model = lambda: "fake-model"
     monkeypatch.setitem(sys.modules, "src.agent.graph", fake_graph)
 
 
@@ -40,3 +42,8 @@ def install_fake_retriever(monkeypatch, fake_retrieve):
     fake_module = types.ModuleType("src.rag.retriever")
     fake_module.retrieve = fake_retrieve
     monkeypatch.setitem(sys.modules, "src.rag.retriever", fake_module)
+
+def install_fake_memory(monkeypatch):
+    fake_memory = types.ModuleType("src.agent.memory")
+    fake_memory.make_config = lambda thread_id: {"configurable": {"thread_id": thread_id}}
+    monkeypatch.setitem(sys.modules, "src.agent.memory", fake_memory)

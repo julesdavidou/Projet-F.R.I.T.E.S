@@ -14,6 +14,7 @@ RUN apt-get update \
         curl \
         ffmpeg \
         libgomp1 \
+        portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt
