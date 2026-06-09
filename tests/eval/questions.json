@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Comment reconnaître un mail de phishing ?",
+    "expected_keywords": ["phishing", "hameçonnage", "lien", "expéditeur"],
+    "expected_domain": "cybersec"
+  },
+  {
+    "question": "Comment activer la MFA à l'UPHF ?",
+    "expected_keywords": ["MFA", "authentification", "multi-facteurs"],
+    "expected_domain": "uphf"
+  },
+  {
+    "question": "Quel VPN utiliser à l'UPHF ?",
+    "expected_keywords": ["eduVPN", "UPHF", "connexion"],
+    "expected_domain": "uphf"
+  },
+  {
+    "question": "Quelles bonnes pratiques Wi-Fi recommander ?",
+    "expected_keywords": ["WPA2", "WPA3", "mot de passe", "WPS"],
+    "expected_domain": "cybersec"
+  }
+]

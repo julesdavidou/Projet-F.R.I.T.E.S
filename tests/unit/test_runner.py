@@ -2,8 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from tests.conftest import FakeAgent, install_fake_graph, reload_module
-
+from tests.conftest import FakeAgent, install_fake_graph, install_fake_memory, reload_module
 
 @pytest.mark.asyncio
 async def test_ask_agent_empty_input(monkeypatch):
