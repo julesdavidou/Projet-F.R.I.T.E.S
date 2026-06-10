@@ -68,12 +68,12 @@ docker compose up -d
 #### Sinon :
 1. Clonez le dépôt GitHub avec :
     ```bash
-    git clone https://github.com/julesdavidou/Agent-de-securite-UPHF
+    git clone https://github.com/julesdavidou/Projet-F.R.I.T.E.S
     ```
 
 2. Déplacez-vous dans le répertoire cloné :
     ```bash
-    cd Agent-de-securite-UPHF
+    cd Projet-F.R.I.T.E.S
     ```  
 3. Assurez-vous que Docker Desktop est lancé.
 4. Dans le terminal à la racine du projet (Agent-de-securite-UPHF), exécutez le build :
