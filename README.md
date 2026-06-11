@@ -11,7 +11,7 @@ Voici l'architecture technique simplifiée de l'application :
 
 ```mermaid
 graph TD
-    User((Utilisateur)) <-->|Texte ou Voix| UI[Chainlit UI]
+    User((Utilisateur)) <-->|Texte ou Voix| UI[FastAPI UI]
     
     subgraph "Interface & Voix"
         UI -->|Audio| STT[STT: Faster-Whisper]
@@ -35,7 +35,7 @@ Plus spécifiquement :
 
 ```mermaid
 flowchart TD
-    U[Utilisateur Chainlit] --> UI[src/ui/app.py]
+    U[Utilisateur FastAPI] --> UI[src/ui/app.py]
     UI --> R[src/agent/runner.py]
     R --> G[LangGraph ReAct]
     G --> C[search_cybersec]
@@ -43,7 +43,7 @@ flowchart TD
     C --> CC[Chroma cybersec_fr]
     H --> CU[Chroma uphf_docs]
     G --> L[Ollama]
-    R --> S[Sources + PDF Chainlit]
+    R --> S[Sources + PDF FastAPI]
     S --> U
 ```
 
